@@ -13,15 +13,15 @@ def make_all_queries():
         user_month = int(user_date[5:7])
         user_day = int(user_date[8:10])
 
-        query = {'year': user_year, 'months.month': user_month, 'months.days.day': user_day}
+        query = {'year': user_year, 'month': user_month, 'day': user_day}
         todays_prices = db.prices.find(query)
 
         # Haetaan tuntikohtaiset hinnat valitulta päivältä.
         print(f"\nTuntikohtaiset hinnat päivälle {user_day}.{user_month}.{user_year}:")
         for price in todays_prices:
-            print(f"{price['months']['days']['hours']['hour']}:00:   {round(price['months']['days']['hours']['value'], 3)} ¢")
+            print(f"{price['hour']}:00:   {round(price['value'], 3)} ¢")
 
-        query = {'year': user_year, 'months.month': user_month}
+        query = {'year': user_year, 'month': user_month}
         this_months_prices = list(db.prices.find(query))
 
         sum = 0
@@ -34,21 +34,21 @@ def make_all_queries():
 
             # Jos on kyseessä kuukauden viimeinen päivä niin lasketaan viimeisen päivän keskiarvo.
             if index == len(this_months_prices) - 1:
-                sum += item['months']['days']['hours']['value']
+                sum += item['value']
                 count += 1
                 avg_price = round((sum / count), 3)
-                print(f"{item['months']['days']['day']}.{item['months']['month']}:    {avg_price} ¢")
+                print(f"{item['day']}.{item['month']}:    {avg_price} ¢")
 
             # Lasketaan aina edellisen päivän keskiarvo kun päivä vaihtuu.
-            if item['months']['days']['day'] != current_day:
+            if item['day'] != current_day:
                 if current_day is not None:
                     avg_price = round((sum / count), 3)
-                    print(f"{item['months']['days']['day'] - 1}.{item['months']['month']}:    {avg_price} ¢")
-                current_day = item['months']['days']['day']
+                    print(f"{item['day'] - 1}.{item['month']}:    {avg_price} ¢")
+                current_day = item['day']
                 sum = 0
                 count = 0
-            sum += item['months']['days']['hours']['value']
-            count+=1
+            sum += item['value']
+            count += 1
             index += 1
 
         query = {'year': user_year}
@@ -64,21 +64,21 @@ def make_all_queries():
 
             # Jos on kyseessä vuoden viimeinen päivä niin lasketaan viimeisen kuukauden keskiarvo.
             if index == len(this_years_prices) - 1:
-                sum += item['months']['days']['hours']['value']
+                sum += item['value']
                 count += 1
                 avg_price = round((sum / count), 3)
-                print(f"{item['year']}-{item['months']['month']}:    {avg_price} ¢")
+                print(f"{item['year']}-{item['month']}:    {avg_price} ¢")
 
             # Lasketaan aina edellisen kuukauden keskiarvo kun kuukausi vaihtuu.
-            if item['months']['month'] != current_month:
+            if item['month'] != current_month:
                 if current_month is not None:
                     avg_price = round((sum / count), 3)
-                    print(f"{item['year']}-{item['months']['month'] - 1}:    {avg_price} ¢")
-                current_month = item['months']['month']
+                    print(f"{item['year']}-{item['month'] - 1}:    {avg_price} ¢")
+                current_month = item['month']
                 sum = 0
                 count = 0
-            sum += item['months']['days']['hours']['value']
-            count+=1
+            sum += item['value']
+            count += 1
             index += 1
 
 

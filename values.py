@@ -17,8 +17,8 @@ def import_values():
         # Indeksoidaan kokoelma.
         prices_collection = db.prices
         prices_collection.create_index(
-            [("year", ASCENDING), ("months.month", ASCENDING), ("months.days.day", ASCENDING),
-             ("months.days.hours.hour", ASCENDING)], unique=True)
+            [("year", ASCENDING), ("month", ASCENDING), ("day", ASCENDING),
+             ("hour", ASCENDING)], unique=True)
 
         for p in prices_list:
             time_str = p['_time']
@@ -27,18 +27,7 @@ def import_values():
             month = time_obj.month
             year = time_obj.year
             hour = time_obj.time().hour
-            price = {'year': year,
-                     'months':
-                         {'month': month,
-                          'days':
-                              {'day': day,
-                               'hours':
-                                   {'hour': hour,
-                                    'value': p['value']
-                                    }
-                               }
-                          }
-                     }
+            price = {'year': year, 'month': month, 'day': day, 'hour': hour, 'value': p['value']}
 
             # Lisätään arvot tietokantaan jos päivää ei löydy jo kokoelmasta.
             db.prices.insert_one(price, {'upsert': True})
